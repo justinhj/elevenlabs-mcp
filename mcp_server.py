@@ -1,25 +1,23 @@
 import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from elevenlabs import generate, set_api_key
 from elevenlabs.client import ElevenLabs
 from fastapi.responses import StreamingResponse
 import uvicorn
 
 # Check for the API key
-api_key = os.getenv("ELEVEN_API_KEY")
+api_key = os.getenv("ELEVENLABS_API_KEY")
 if not api_key:
-    raise ValueError("ELEVEN_API_KEY environment variable not set")
+    raise ValueError("ELEVENLABS_API_KEY environment variable not set")
 
-set_api_key(api_key)
-client = ElevenLabs()
+client = ElevenLabs(api_key=api_key)
 
 app = FastAPI()
 
 class SpeakRequest(BaseModel):
     text: str
-    model_id: str = "eleven_multilingual_v2"
-    voice_id: str = "21m00Tcm4TlvDq8ikWAM"
+    model_id: str = "eleven_flash_v2_5"
+    voice_id: str = "Z3R5wn05IrDiVCyEkUrK"
 
 @app.post("/speak")
 async def speak(request: SpeakRequest):
@@ -27,11 +25,11 @@ async def speak(request: SpeakRequest):
     Receives text and optional model/voice IDs, and streams back the generated audio.
     """
     try:
-        audio_stream = client.generate(
+        audio_stream = client.text_to_speech.convert(
             text=request.text,
-            voice=request.voice_id,
-            model=request.model_id,
-            stream=True
+            voice_id=request.voice_id,
+            model_id=request.model_id,
+            output_format="mp3_44100_128"
         )
         return StreamingResponse(audio_stream, media_type="audio/mpeg")
     except Exception as e:
