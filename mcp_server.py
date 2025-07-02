@@ -2,7 +2,7 @@ import os
 import logging
 from mcp.server.fastmcp import FastMCP  # Import FastMCP
 from pydantic import BaseModel, Field
-from elevenlabs.client import ElevenLabs, ElevenLabsAPIError
+from elevenlabs.client import ElevenLabs
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -52,10 +52,6 @@ async def speak_text_to_audio(request: SpeakToolInput) -> SpeakToolOutput:
         logger.info("Text-to-speech conversion successful.")
         return SpeakToolOutput(success=True)
 
-    except ElevenLabsAPIError as e:
-        logger.error(f"ElevenLabs API error during text-to-speech: {e}")
-        # MCP errors are typically returned within the JSON-RPC error field
-        raise Exception(f"ElevenLabs API error: {e.detail if hasattr(e, 'detail') else str(e)}")
     except Exception as e:
         logger.exception(f"An unexpected error occurred during text-to-speech: {e}")
         raise Exception(f"An internal server error occurred: {str(e)}")
