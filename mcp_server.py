@@ -1,15 +1,21 @@
 import os
+import sys
 import logging
+from dotenv import load_dotenv # Import load_dotenv
 from mcp.server.fastmcp import FastMCP  # Import FastMCP
 from pydantic import BaseModel, Field
 from elevenlabs.client import ElevenLabs
+
+# Load environment variables from .env file
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 api_key = os.getenv("ELEVENLABS_API_KEY")
 if not api_key:
-    raise ValueError("ELEVENLABS_API_KEY environment variable not set")
+    logger.error("ELEVENLABS_API_KEY environment variable not set. Please set it in your .env file or environment.")
+    sys.exit(1) # Exit if API key is not set
 
 elevenlabs_client = ElevenLabs(api_key=api_key)
 
@@ -58,7 +64,9 @@ async def speak_text_to_audio(request: SpeakToolInput) -> SpeakToolOutput:
 
 # This part is where the FastMCP server runs, NOT Uvicorn directly
 if __name__ == "__main__":
-    # If using stdio transport (common for local servers managed by a host like Claude Desktop)
-    mcp_server.run(transport='stdio')
-    # If using HTTP/SSE transport (for remote servers)
-    # mcp_server.run(transport='http') # This would typically run its own HTTP server
+    stdio_command = [sys.executable, os.path.abspath(__file__)]
+    try:
+        mcp_server.run()
+    except Exception as e:
+        logger.exception(f"Failed to start MCP server: {e}")
+        sys.exit(1) # Exit with an error code
