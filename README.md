@@ -6,14 +6,14 @@ This project provides a simple server that exposes ElevenLabs' text-to-speech fu
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/elevenlabs-mcp-server.git
-    cd elevenlabs-mcp-server
+    git clone https://github.com/justinhj/elevenlabs-mcp.git
+    cd elevenlabs-mcp
     ```
 
 2.  **Install dependencies:**
     Make sure you have Python 3.12 or higher installed. You can use `uv` to install the dependencies:
     ```bash
-    uv pip install -r requirements.txt
+    uv sync
     ```
 
 ## Configuration
@@ -28,26 +28,23 @@ This project provides a simple server that exposes ElevenLabs' text-to-speech fu
     ELEVENLABS_API_KEY="your-api-key"
     ```
 
+Optionally you can set up an environment variable to store your ElevenLabs API key.
+
 ## Usage
 
-1.  **Run the server:**
-    You can run the server in two ways:
+Configure the mcp server as appropriate for your mcp client. For example if using Gemini-cli you can add the following to your `../gemini/settings.json`
 
-    *   **STDIO:**
-        ```bash
-        python elevenlabs_mcp.py
-        ```
-
-    *   **HTTP:**
-        ```bash
-        uvicorn mcp_server:server --host 127.0.0.1 --port 9000
-        ```
-
-2.  **Send a request to the server:**
-    You can use the provided `example1.py` to send a request to the server. Make sure the server is running in HTTP mode.
-
-    ```bash
-    python example1.py
-    ```
-
-    This will send a request to the server to say "Hello, world!" using the default voice. You can customize the text and `voice_id` in the `example1.py` file.
+```
+{
+    "mcpServers": {
+        "elevenlabs_mcp": {
+            "command": "uv",
+            "args": [
+                "run",
+                "elevenlabs_mcp.py"
+            ],
+            "cwd": "/Users/yourhome/elevenlabsapi"
+        }
+    }
+}
+```
