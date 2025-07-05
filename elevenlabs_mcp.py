@@ -14,27 +14,22 @@ elevenlabs = ElevenLabs(
 mcp = FastMCP(name="MyServer")
 
 @mcp.tool(
-    name="greet",
-    description="Greet a user by name using ElevenLabs text-to-speech. It returns a status message based on the api response"
+    name="speak",
+    description="Play synchronously the text provided using ElevenLabs text-to-speech given an optional voice_id. It returns a status message based on the api response. If the status is ok then it worked, but if it the status is error there will be a message in the response too."
 )
-
-def greet(name: str) -> str:
-    """Greet a user by name."""
-    text_to_speak = f"Hello, {name}, you big fanny!"
+def speak(text: str, voice_id: str ="Z3R5wn05IrDiVCyEkUrK") -> dict[str, str]:
     try:
         audio = elevenlabs.text_to_speech.convert(
-            text=text_to_speak,
-            voice_id="Z3R5wn05IrDiVCyEkUrK",  # "JBFqnCBsd6RMkjVDRZzb",
-            model_id="eleven_flash_v2_5",
-            # "eleven_multilingual_v2",
+            text=text,
+            voice_id=voice_id,  # "JBFqnCBsd6RMkjVDRZzb",
+            model_id="eleven_flash_v2_5",  # "eleven_multilingual_v2",
             output_format="mp3_44100_128",
         )
         if audio:
             play(audio)
-            return '{"status": "OK"}'
+            return {"status": "OK"}
     except Exception as e:
-        print(f"An error occurred: {e}")
-        sys.exit(1)
+        return {"status": "error", "message": str(e)}
 
 if __name__ == "__main__":
     # This runs the server, defaulting to STDIO transport
