@@ -48,3 +48,7 @@ Configure the mcp server as appropriate for your mcp client. For example if usin
     }
 }
 ```
+
+## Future Ideas
+
+*   Allow customization of the voice and model via environment variables.
